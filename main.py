@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import logging
+import os
 from datetime import datetime, timezone
 from typing import Literal
 
@@ -704,9 +705,13 @@ if __name__ == "__main__":
     publish_to_metaculus = True
     print_startup_banner(run_mode, will_publish=publish_to_metaculus)
 
-    # Configure the bot. The `llms=` block below is commented out to use
-    # whichever default models forecasting-tools picks based on your env vars;
-    # uncomment and edit to pin specific models.
+    # Configure the bot. The bot runs on GitHub Models (no OpenRouter key):
+    # every llm below is an OpenAI-compatible client pointed at
+    # https://models.github.ai/inference and authenticated with the
+    # GITHUB_TOKEN that GitHub Actions provides automatically (locally,
+    # use a GitHub personal access token with models:read).
+    _github_models_base_url = "https://models.github.ai/inference"
+    _github_models_api_key = os.getenv("GITHUB_TOKEN")
     template_bot = FallTemplateBot2026(
         research_reports_per_question=1,
         predictions_per_research_report=5,
@@ -715,17 +720,40 @@ if __name__ == "__main__":
         folder_to_save_reports_to=None,
         skip_previously_forecasted_questions=True,
         extra_metadata_in_explanation=True,
-        # llms={
-        #     "default": GeneralLlm(
-        #         model="openrouter/openai/gpt-4o",
-        #         temperature=0.3,
-        #         timeout=40,
-        #         allowed_tries=2,
-        #     ),
-        #     "summarizer": "openai/gpt-4o-mini",
-        #     "researcher": "asknews/news-summaries",
-        #     "parser": "openai/gpt-4o-mini",
-        # },
+        llms={
+            "default": GeneralLlm(
+                model="openai/gpt-4o-mini",
+                base_url=_github_models_base_url,
+                api_key=_github_models_api_key,
+                temperature=0.3,
+                timeout=40,
+                allowed_tries=2,
+            ),
+            "summarizer": GeneralLlm(
+                model="openai/gpt-4o-mini",
+                base_url=_github_models_base_url,
+                api_key=_github_models_api_key,
+                temperature=0.3,
+                timeout=40,
+                allowed_tries=2,
+            ),
+            "researcher": GeneralLlm(
+                model="openai/gpt-4o-mini",
+                base_url=_github_models_base_url,
+                api_key=_github_models_api_key,
+                temperature=0.1,
+                timeout=40,
+                allowed_tries=2,
+            ),
+            "parser": GeneralLlm(
+                model="openai/gpt-4o-mini",
+                base_url=_github_models_base_url,
+                api_key=_github_models_api_key,
+                temperature=0.3,
+                timeout=40,
+                allowed_tries=2,
+            ),
+        },
     )
 
     # Per-mode tournament URL shown in the summary banner footer. These

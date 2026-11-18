@@ -24,9 +24,9 @@ If you run into trouble, reach out to `ben [at] metaculus [.com]`
 The easiest way to use this repo is to fork it, paste in two API keys, and click "Run workflow". After that, the bot will keep forecasting on new questions automatically every 20 minutes — no local setup needed.
 
 1) **Fork the repository**: go to the [repository](https://github.com/Metaculus/metac-bot-template) and click **Fork** in the top right.
-2) **Add your two API keys as repository secrets**: in your fork, go to `Settings → Secrets and variables → Actions → New repository secret`. Add these two (names must match exactly, all caps):
+2) **Add your API key as a repository secret**: in your fork, go to `Settings → Secrets and variables → Actions → New repository secret`. Add this one (name must match exactly, all caps):
    - **`METACULUS_TOKEN`** — create one at https://www.metaculus.com/futureeval/participate/ (see the [resources page](https://www.metaculus.com/notebooks/38928/ai-benchmark-resources/#creating-your-bot-account-and-metaculus-token) if you get stuck).
-   - **`OPENROUTER_API_KEY`** — get free credits via [this form](https://forms.gle/aQdYMq9Pisrf1v7d8), or make your own key on [OpenRouter](https://openrouter.ai/). You can also use `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY`, `ASKNEWS_SECRET`, etc. — these all work out of the box if you set them.
+   - No LLM key is needed: the bot runs on GitHub Models, authenticated by the automatic `GITHUB_TOKEN` in GitHub Actions. You can also use `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY`, `ASKNEWS_SECRET`, etc. — these all work out of the box if you set them.
 3) **Enable Actions**: click the `Actions` tab, then click `I understand my workflows, go ahead and enable them`.
 4) **Run the test workflow to confirm everything works**: go to `Actions → Test Bot → Run workflow → Run workflow` (green button). This forecasts on whatever's currently open in the [bot-testing-area tournament](https://www.metaculus.com/tournament/bot-testing-area/) so you can verify your setup posts forecasts to Metaculus end-to-end. Once the run finishes (~3–5 min), [switch to your bot account](#seeing-your-bots-forecasts) on Metaculus to check that the forecasts landed. They won't show up on your human account.
 5) **You're done! (and participation form)**: The `Forecast on new AI tournament questions` workflow is already enabled and will run every 20 minutes, picking up any new tournament questions and skipping ones it has already forecast on. Before you start submitting forecasts, all participants are required to fill out the first section of our [participation](https://forms.gle/aQdYMq9Pisrf1v7d8) form. There are only 3 required questions, so it should be pretty quick. This form is used to help us learn about the demographics and motivations of our community in FutureEval, amplify individual projects/research, and also to collect applications for LLM credits.
@@ -52,7 +52,7 @@ You can run any workflow against any branch — no need to merge to `main` first
 The runner checks out your branch and uses the repo's existing secrets — those are scoped to the repo, not the branch, so they work for any branch in the same repo. This works for all three workflows.
 
 ## API Keys
-Instructions for getting your METACULUS_TOKEN, OPENROUTER_API_KEY, or optional search provider API keys (AskNews, Exa, Perplexity, etc) are listed on the "Getting Started" section of the [resources](https://www.metaculus.com/notebooks/38928/ai-benchmark-resources/#want-to-join-the-ai-forecasting-benchmark) page.
+Instructions for getting your METACULUS_TOKEN or optional search provider API keys (AskNews, Exa, Perplexity, etc) are listed on the "Getting Started" section of the [resources](https://www.metaculus.com/notebooks/38928/ai-benchmark-resources/#want-to-join-the-ai-forecasting-benchmark) page.
 
 ## Changing the Github automation
 To run a different script under the same workflows, edit the `uv run python main.py` line in the appropriate file under `.github/workflows/` and replace `main.py` with your script. The workflows that exist:
@@ -97,7 +97,7 @@ Copy the template and fill in your real keys:
 ```bash
 cp .env.template .env
 ```
-Then open `.env` in any text editor and replace each `REPLACE_ME` with your real key. At minimum you need `METACULUS_TOKEN` and one LLM key (`OPENROUTER_API_KEY` is recommended). See the comments inside `.env.template` for where to get each one.
+Then open `.env` in any text editor and replace each `REPLACE_ME` with your real key. At minimum you need `METACULUS_TOKEN`. The LLM runs on GitHub Models via `GITHUB_TOKEN` (automatic in GitHub Actions; for local runs use a GitHub personal access token with models:read). See the comments inside `.env.template` for where to get each one.
 
 ### 5. Run the bot
 **First run — smoke-test against the [bot-testing-area tournament](https://www.metaculus.com/tournament/bot-testing-area/):**

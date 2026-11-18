@@ -1,5 +1,9 @@
 name: Test Bot
 
+permissions:
+  contents: read
+  models: read
+
 on:
   workflow_dispatch:
 
@@ -36,7 +40,10 @@ jobs:
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
           EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Fallback for any OpenAI-provider call without an explicit
+          # base URL/key: the same GitHub Models endpoint.
+          OPENAI_BASE_URL: https://models.github.ai/inference
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ASKNEWS_CLIENT_ID: ${{ secrets.ASKNEWS_CLIENT_ID }}
           ASKNEWS_SECRET: ${{ secrets.ASKNEWS_SECRET }}

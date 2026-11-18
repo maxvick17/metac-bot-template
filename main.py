@@ -21,7 +21,7 @@ from forecasting_tools import (
     AskNewsSearcher,
     BinaryQuestion,
     ForecastBot,
-    GeneralLlm,
+    GeneralLlm, RefreshingBucketRateLimiter,
     MetaculusClient,
     MetaculusQuestion,
     MultipleChoiceQuestion,
@@ -137,7 +137,7 @@ class FallTemplateBot2026(ForecastBot):
             prompt = self._get_research_prompt(question, researcher)
 
             if isinstance(researcher, GeneralLlm):
-                research = await researcher.invoke(prompt)
+                await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); research = await researcher.invoke(prompt)
             elif (
                 researcher == "asknews/news-summaries"
                 or researcher == "asknews/deep-research/low-depth"
@@ -160,7 +160,7 @@ class FallTemplateBot2026(ForecastBot):
             elif not researcher or researcher == "None" or researcher == "no_research":
                 research = ""
             else:
-                research = await self.get_llm("researcher", "llm").invoke(prompt)
+                await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); research = await self.get_llm("researcher", "llm").invoke(prompt)
             logger.info(f"Found Research for URL {question.page_url}:\n{research}")
             return research
 
@@ -236,7 +236,7 @@ class FallTemplateBot2026(ForecastBot):
         question: BinaryQuestion,
         prompt: str,
     ) -> ReasonedPrediction[float]:
-        reasoning = await self.get_llm("default", "llm").invoke(prompt)
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); reasoning = await self.get_llm("default", "llm").invoke(prompt)
         logger.info(f"Reasoning for URL {question.page_url}: {reasoning}")
         parsing_instructions = clean_indents(
             f"""
@@ -244,7 +244,7 @@ class FallTemplateBot2026(ForecastBot):
             {self._create_resolved_question_parsing_message()}
             """
         )
-        binary_prediction: BinaryPrediction = await structure_output(
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); binary_prediction: BinaryPrediction = await structure_output(
             reasoning,
             BinaryPrediction,
             model=self.get_llm("parser", "llm"),
@@ -318,9 +318,9 @@ class FallTemplateBot2026(ForecastBot):
             {self._create_resolved_question_parsing_message()}
             """
         )
-        reasoning = await self.get_llm("default", "llm").invoke(prompt)
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); reasoning = await self.get_llm("default", "llm").invoke(prompt)
         logger.info(f"Reasoning for URL {question.page_url}: {reasoning}")
-        predicted_option_list: PredictedOptionList = await structure_output(
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); predicted_option_list: PredictedOptionList = await structure_output(
             text_to_structure=reasoning,
             output_type=PredictedOptionList,
             model=self.get_llm("parser", "llm"),
@@ -401,7 +401,7 @@ class FallTemplateBot2026(ForecastBot):
         question: NumericQuestion,
         prompt: str,
     ) -> ReasonedPrediction[NumericDistribution]:
-        reasoning = await self.get_llm("default", "llm").invoke(prompt)
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); reasoning = await self.get_llm("default", "llm").invoke(prompt)
         logger.info(f"Reasoning for URL {question.page_url}: {reasoning}")
         parsing_instructions = clean_indents(
             f"""
@@ -418,7 +418,7 @@ class FallTemplateBot2026(ForecastBot):
             - Turn any values that are in scientific notation into regular numbers.
             """
         )
-        percentile_list: list[Percentile] = await structure_output(
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); percentile_list: list[Percentile] = await structure_output(
             reasoning,
             list[Percentile],
             model=self.get_llm("parser", "llm"),
@@ -497,7 +497,7 @@ class FallTemplateBot2026(ForecastBot):
         question: DateQuestion,
         prompt: str,
     ) -> ReasonedPrediction[NumericDistribution]:
-        reasoning = await self.get_llm("default", "llm").invoke(prompt)
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); reasoning = await self.get_llm("default", "llm").invoke(prompt)
         logger.info(f"Reasoning for URL {question.page_url}: {reasoning}")
         parsing_instructions = clean_indents(
             f"""
@@ -510,7 +510,7 @@ class FallTemplateBot2026(ForecastBot):
             - If percentiles are not explicitly given (e.g. only a single value is given) please don't return a parsed output, but rather indicate that the answer is not explicitly given in the text.
             """
         )
-        date_percentile_list: list[DatePercentile] = await structure_output(
+        await _gemini_rate_limiter.wait_till_able_to_acquire_resources(1); date_percentile_list: list[DatePercentile] = await structure_output(
             reasoning,
             list[DatePercentile],
             model=self.get_llm("parser", "llm"),
@@ -711,7 +711,7 @@ if __name__ == "__main__":
     # "gemini-3.5-flash-lite" is written as "openai/gemini-3.5-flash-lite" so LiteLLM can
     # route it to the OpenAI provider against the Gemini base URL, using the
     # GEMINI_API_KEY secret as the api key.
-    _gemini_base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    _gemini_base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"; _gemini_rate_limiter = RefreshingBucketRateLimiter(capacity=3, refresh_rate=0.18)  # Pace Gemini calls: free tier allows 15/min; this bucket refills ~11/min with a burst of 3.
     _gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
     template_bot = FallTemplateBot2026(
         research_reports_per_question=1,

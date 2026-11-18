@@ -70,12 +70,12 @@ def check_environment(strict: bool = True) -> None:
 
     has_llm_key = any(
         _is_real_env(k)
-        for k in ("GITHUB_TOKEN", "OPENAI_API_KEY", "ANTHROPIC_API_KEY")
+        for k in ("GEMINI_API_KEY", "GITHUB_TOKEN", "OPENAI_API_KEY", "ANTHROPIC_API_KEY")
     )
     if not has_llm_key:
         problems.append(
-            "No LLM key set. Set GITHUB_TOKEN (GitHub Models, provided "
-            "automatically in GitHub Actions), OPENAI_API_KEY or "
+            "No LLM key set. Set GEMINI_API_KEY (free key from Google AI Studio), "
+            "GITHUB_TOKEN, OPENAI_API_KEY or "
             "ANTHROPIC_API_KEY. The Metaculus LLM proxy "
             "that the bot used to fall back to is no longer available."
         )

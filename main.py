@@ -91,9 +91,9 @@ class FallTemplateBot2026(ForecastBot):
                 timeout=40,
                 allowed_tries=2,
             ),
-            "summarizer": "openai/gemini-3.8-flash",
+            "summarizer": "openai/gemini-3.5-flash-lite",
             "researcher": "asknews/news-summaries",
-            "parser": "openai/gemini-3.8-flash",
+            "parser": "openai/gemini-3.5-flash-lite",
         },
     )
     ```
@@ -708,7 +708,7 @@ if __name__ == "__main__":
     # Configure the bot. The bot runs on Google Gemini (free AI Studio key)
     # via its OpenAI-compatible endpoint. GitHub Models was retired in
     # July 2026, and keyless Pollinations is rate-limited to 1 reply / 45s.
-    # "gemini-3.8-flash" is written as "openai/gemini-3.8-flash" so LiteLLM can
+    # "gemini-3.5-flash-lite" is written as "openai/gemini-3.5-flash-lite" so LiteLLM can
     # route it to the OpenAI provider against the Gemini base URL, using the
     # GEMINI_API_KEY secret as the api key.
     _gemini_base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
@@ -723,7 +723,7 @@ if __name__ == "__main__":
         extra_metadata_in_explanation=True,
         llms={
             "default": GeneralLlm(
-                model="openai/gemini-3.8-flash",
+                model="openai/gemini-3.5-flash-lite",
                 base_url=_gemini_base_url,
                 api_key=_gemini_api_key,
                 temperature=0.3,
@@ -731,7 +731,7 @@ if __name__ == "__main__":
                 allowed_tries=2,
             ),
             "summarizer": GeneralLlm(
-                model="openai/gemini-3.8-flash",
+                model="openai/gemini-3.5-flash-lite",
                 base_url=_gemini_base_url,
                 api_key=_gemini_api_key,
                 temperature=0.3,
@@ -739,7 +739,7 @@ if __name__ == "__main__":
                 allowed_tries=2,
             ),
             "researcher": GeneralLlm(
-                model="openai/gemini-3.8-flash",
+                model="openai/gemini-3.5-flash-lite",
                 base_url=_gemini_base_url,
                 api_key=_gemini_api_key,
                 temperature=0.1,
@@ -747,7 +747,7 @@ if __name__ == "__main__":
                 allowed_tries=2,
             ),
             "parser": GeneralLlm(
-                model="openai/gemini-3.8-flash",
+                model="openai/gemini-3.5-flash-lite",
                 base_url=_gemini_base_url,
                 api_key=_gemini_api_key,
                 temperature=0.3,

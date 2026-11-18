@@ -91,9 +91,9 @@ class FallTemplateBot2026(ForecastBot):
                 timeout=40,
                 allowed_tries=2,
             ),
-            "summarizer": "openai/gpt-4o-mini",
+            "summarizer": "openai/openai",
             "researcher": "asknews/news-summaries",
-            "parser": "openai/gpt-4o-mini",
+            "parser": "openai/openai",
         },
     )
     ```
@@ -705,13 +705,14 @@ if __name__ == "__main__":
     publish_to_metaculus = True
     print_startup_banner(run_mode, will_publish=publish_to_metaculus)
 
-    # Configure the bot. The bot runs on GitHub Models (no OpenRouter key):
-    # every llm below is an OpenAI-compatible client pointed at
-    # https://models.github.ai/inference and authenticated with the
-    # GITHUB_TOKEN that GitHub Actions provides automatically (locally,
-    # use a GitHub personal access token with models:read).
-    _github_models_base_url = "https://models.github.ai/inference"
-    _github_models_api_key = os.getenv("GITHUB_TOKEN")
+    # Configure the bot. The bot runs on Pollinations (keyless,
+    # OpenAI-compatible) because GitHub Models returned an empty "OK"
+    # response through LiteLLM. No LLM key is needed. Pollinations model
+    # "openai" is written as "openai/openai" so LiteLLM can route it to
+    # the OpenAI provider, and a placeholder api key is passed because
+    # LiteLLM requires a non-empty key (Pollinations ignores it).
+    _pollinations_base_url = "https://text.pollinations.ai/openai"
+    _pollinations_api_key = "pollinations"
     template_bot = FallTemplateBot2026(
         research_reports_per_question=1,
         predictions_per_research_report=5,
@@ -722,33 +723,33 @@ if __name__ == "__main__":
         extra_metadata_in_explanation=True,
         llms={
             "default": GeneralLlm(
-                model="openai/gpt-4o-mini",
-                base_url=_github_models_base_url,
-                api_key=_github_models_api_key,
+                model="openai/openai",
+                base_url=_pollinations_base_url,
+                api_key=_pollinations_api_key,
                 temperature=0.3,
                 timeout=40,
                 allowed_tries=2,
             ),
             "summarizer": GeneralLlm(
-                model="openai/gpt-4o-mini",
-                base_url=_github_models_base_url,
-                api_key=_github_models_api_key,
+                model="openai/openai",
+                base_url=_pollinations_base_url,
+                api_key=_pollinations_api_key,
                 temperature=0.3,
                 timeout=40,
                 allowed_tries=2,
             ),
             "researcher": GeneralLlm(
-                model="openai/gpt-4o-mini",
-                base_url=_github_models_base_url,
-                api_key=_github_models_api_key,
+                model="openai/openai",
+                base_url=_pollinations_base_url,
+                api_key=_pollinations_api_key,
                 temperature=0.1,
                 timeout=40,
                 allowed_tries=2,
             ),
             "parser": GeneralLlm(
-                model="openai/gpt-4o-mini",
-                base_url=_github_models_base_url,
-                api_key=_github_models_api_key,
+                model="openai/openai",
+                base_url=_pollinations_base_url,
+                api_key=_pollinations_api_key,
                 temperature=0.3,
                 timeout=40,
                 allowed_tries=2,

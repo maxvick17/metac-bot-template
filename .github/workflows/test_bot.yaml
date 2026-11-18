@@ -42,8 +42,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Fallback for any OpenAI-provider call without an explicit
-          # base URL/key: the same GitHub Models endpoint.
-          OPENAI_BASE_URL: https://models.github.ai/inference
+          # base URL/key: the same Pollinations endpoint.
+          OPENAI_BASE_URL: https://text.pollinations.ai/openai
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ASKNEWS_CLIENT_ID: ${{ secrets.ASKNEWS_CLIENT_ID }}
           ASKNEWS_SECRET: ${{ secrets.ASKNEWS_SECRET }}

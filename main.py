@@ -91,9 +91,9 @@ class FallTemplateBot2026(ForecastBot):
                 timeout=40,
                 allowed_tries=2,
             ),
-            "summarizer": "openai/openai",
+            "summarizer": "openai/gemini-2.0-flash",
             "researcher": "asknews/news-summaries",
-            "parser": "openai/openai",
+            "parser": "openai/gemini-2.0-flash",
         },
     )
     ```
@@ -705,14 +705,14 @@ if __name__ == "__main__":
     publish_to_metaculus = True
     print_startup_banner(run_mode, will_publish=publish_to_metaculus)
 
-    # Configure the bot. The bot runs on Pollinations (keyless,
-    # OpenAI-compatible) because GitHub Models returned an empty "OK"
-    # response through LiteLLM. No LLM key is needed. Pollinations model
-    # "openai" is written as "openai/openai" so LiteLLM can route it to
-    # the OpenAI provider, and a placeholder api key is passed because
-    # LiteLLM requires a non-empty key (Pollinations ignores it).
-    _pollinations_base_url = "https://text.pollinations.ai/openai"
-    _pollinations_api_key = "pollinations"
+    # Configure the bot. The bot runs on Google Gemini (free AI Studio key)
+    # via its OpenAI-compatible endpoint. GitHub Models was retired in
+    # July 2026, and keyless Pollinations is rate-limited to 1 reply / 45s.
+    # "gemini-2.0-flash" is written as "openai/gemini-2.0-flash" so LiteLLM can
+    # route it to the OpenAI provider against the Gemini base URL, using the
+    # GEMINI_API_KEY secret as the api key.
+    _gemini_base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    _gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
     template_bot = FallTemplateBot2026(
         research_reports_per_question=1,
         predictions_per_research_report=5,
@@ -723,33 +723,33 @@ if __name__ == "__main__":
         extra_metadata_in_explanation=True,
         llms={
             "default": GeneralLlm(
-                model="openai/openai",
-                base_url=_pollinations_base_url,
-                api_key=_pollinations_api_key,
+                model="openai/gemini-2.0-flash",
+                base_url=_gemini_base_url,
+                api_key=_gemini_api_key,
                 temperature=0.3,
                 timeout=40,
                 allowed_tries=2,
             ),
             "summarizer": GeneralLlm(
-                model="openai/openai",
-                base_url=_pollinations_base_url,
-                api_key=_pollinations_api_key,
+                model="openai/gemini-2.0-flash",
+                base_url=_gemini_base_url,
+                api_key=_gemini_api_key,
                 temperature=0.3,
                 timeout=40,
                 allowed_tries=2,
             ),
             "researcher": GeneralLlm(
-                model="openai/openai",
-                base_url=_pollinations_base_url,
-                api_key=_pollinations_api_key,
+                model="openai/gemini-2.0-flash",
+                base_url=_gemini_base_url,
+                api_key=_gemini_api_key,
                 temperature=0.1,
                 timeout=40,
                 allowed_tries=2,
             ),
             "parser": GeneralLlm(
-                model="openai/openai",
-                base_url=_pollinations_base_url,
-                api_key=_pollinations_api_key,
+                model="openai/gemini-2.0-flash",
+                base_url=_gemini_base_url,
+                api_key=_gemini_api_key,
                 temperature=0.3,
                 timeout=40,
                 allowed_tries=2,

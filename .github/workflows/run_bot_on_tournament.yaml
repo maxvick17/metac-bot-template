@@ -7,7 +7,7 @@ permissions:
 on:
   workflow_dispatch:
   schedule:
-    - cron: "7,27,47 * * * *" # every 20 min, offset off the hour. Make sure to skip already-forecasted questions!
+    - cron: "0 22 * * *"  # once daily at 2:00 PM Pacific (22:00 UTC), after the Cup run has had first claim on the day's Gemini quota
 
 # Add concurrency group to prevent parallel runs
 concurrency:

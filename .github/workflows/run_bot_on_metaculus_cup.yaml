@@ -7,7 +7,7 @@ permissions:
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 */2 * *" # runs at midnight every 2 days
+    - cron: "15 8 */2 * *"  # runs at 12:15 AM Pacific (08:15 UTC), shortly after the Gemini daily quota resets at midnight Pacific, every 2 days
 
 # Add concurrency group to prevent parallel runs
 concurrency:
